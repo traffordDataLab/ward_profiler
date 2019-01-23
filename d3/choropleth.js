@@ -6,7 +6,7 @@ var newDate = new Date()
 
 var data = (obj.data) ? obj.data:["",""];//data on the format described above *required
 var container = (obj.container) ? obj.container:"";//selector for the existing element that will contain the svg *required
-var palette = (obj.barColour) ? obj.barColour:["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"];
+var palette = (obj.palette) ? obj.palette:["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"];
 var strokeColour = (obj.strokeColour) ? obj.strokeColour:"#fc6721";
 var title = (obj.title) ? obj.title:"";
 var subtitle = (obj.subtitle) ? obj.subtitle:"";
@@ -54,8 +54,6 @@ var numDigits = (not_decimal<0)?",.0f":",." + (char_array.length - not_decimal -
              })
   				   .style("fill", function(d) {
   				   		var value = d.properties.value;
-                console.log("value")
-                console.log(value)
                 if (value) {
                   return quantize(value);
                 } else {

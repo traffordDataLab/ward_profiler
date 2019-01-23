@@ -31,7 +31,7 @@
     font-family: 'Roboto', sans-serif;
     src: url("https://fonts.googleapis.com/css?family=Open+Sans|Roboto'");
   }
-  .placeLabel, .legend, .legendTitle, #bestFitLegend, #description, h3, .header
+  body, .placeLabel, .legend, .legendTitle, #bestFitLegend, #description, h3, .header
   {
     font-family: 'Roboto', sans-serif;
   }
@@ -112,9 +112,13 @@
   {
     fill: black;
   }
+  .stickHighlight
+  {
+    stroke: black;
+  }
   .boundaryFill
   {
-    fill: #41b6c4;
+    fill: #fd8d3c;
   }
   #theme{
     float:left;
@@ -313,13 +317,13 @@
           clickFunction:highlightArea,
           legendTitle:data[1]['measure'],
           source:source,
-          palette:["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"]
+          palette:["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"]//["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"]
         }
           choro(objChoro)
           var objLPC={data:data,
             container:"#bar",
             clickFunction:highlightArea,
-            palette:["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"]
+            palette:["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"]//["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"]
           }
           lollypopChart(objLPC)
           document.getElementById("description").innerHTML=description
@@ -337,6 +341,10 @@
       for (var i = 0; i<elems.length; i++) {
         elems[i].classList.remove("circleHighlight");
       }
+      var elems=document.getElementsByClassName("stick")
+      for (var i = 0; i<elems.length; i++) {
+        elems[i].classList.remove("stickHighlight");
+      }
       var elems=document.getElementsByClassName("tickLabel")
       for (var i = 0; i<elems.length; i++) {
         elems[i].classList.remove("tickLabelHighlight");
@@ -351,6 +359,7 @@
         }
         if(elems[i].tagName=="text")elems[i].classList.add("tickLabelHighlight");
         if(elems[i].tagName=="circle")elems[i].classList.add("circleHighlight");
+        if(elems[i].tagName=="line")elems[i].classList.add("stickHighlight");
       }
     }
     //load svg's of Wards and map selector

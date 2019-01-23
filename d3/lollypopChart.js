@@ -108,6 +108,7 @@ function lollypopChart(obj){
   .append("g")
   //append lines
   lollypops.append("line")
+  .attr("class", function(d) {return "stick " + d.area_name})
   .attr("x1", function(d) { return hx(d.value); })
   .attr("x2", hx(0))
   .attr("y1", function(d) { return hy(d.area_name)+hy.bandwidth()/2; })
