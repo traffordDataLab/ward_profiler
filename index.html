@@ -31,7 +31,8 @@
     font-family: 'Roboto', sans-serif;
     src: url("https://fonts.googleapis.com/css?family=Open+Sans|Roboto'");
   }
-  body, .placeLabel, .legend, .legendTitle, #bestFitLegend, #description, h3, .header
+  h3, .placeLabel, .legend, .legendTitle, #bestFitLegend, #description,
+  .header, .choroTitle, .choroSubtitle, .choroSource, .choroNote, .valueLabel, .tickLabel
   {
     font-family: 'Roboto', sans-serif;
   }
@@ -42,6 +43,7 @@
     padding-bottom: 10px;
     border-bottom: 1px solid #ccc;
     font-size: 20px;
+    cursor: pointer;
   }
   #bestFitMap
   {
@@ -122,8 +124,7 @@
   }
   #theme{
     float:left;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding: 10px 5px 10px 0px;
   }
   #dataset
   {
@@ -209,7 +210,7 @@
 </head>
 
 <body>
-  <div class="header">Trafford ward profiler</div>
+  <div class="header" onclick="initialPage()">Trafford ward profiler</div>
   <div id="theme" ></div>
   <div id="dataset"></div>
   <div id="bestFitMap" class="hidden">
@@ -235,7 +236,7 @@
   {theme:"Economy", url:"https://www.trafforddatalab.io/ward_data/economy/meta.csv"},
   {theme:"Education", url:"https://www.trafforddatalab.io/ward_data/education/meta.csv"},
   {theme:"Environment", url:"https://www.trafforddatalab.io/ward_data/environment/meta.csv"},
-  //{theme:"Governance", url:"https://www.trafforddatalab.io/ward_data/governance/meta.csv"},
+  {theme:"Governance", url:"https://www.trafforddatalab.io/ward_data/governance/meta.csv"},
   {theme:"Health", url:"https://www.trafforddatalab.io/ward_data/health/meta.csv"},
   {theme:"Housing", url:"https://www.trafforddatalab.io/ward_data/housing/meta.csv"},
   {theme:"Labour market", url:"https://www.trafforddatalab.io/ward_data/labour_market/meta.csv"},
@@ -246,16 +247,7 @@
   var geoJsonUrl="https://www.trafforddatalab.io/spatial_data/ward/2017/trafford_ward_super_generalised.geojson"
   d3.json(geoJsonUrl, function (error, json1) {
     json=json1;
-    var selectTheme = '<select name="selectTheme" onChange="themeDataset(this.value)"><option value="{}">Select a Theme</option>';
-    for (var i = 0; i < themeUrls.length; i++) {
-      selectTheme += '<option value="{£name£:£' + themeUrls[i].theme + '£,£url£:£' + themeUrls[i].url + '£}"';
-      selectTheme += '>' + themeUrls[i].theme + '</option>';
-    }
-    selectTheme += '</select>';
-    var divf = document.createElement('div');
-    divf.innerHTML = selectTheme;
-    document.getElementById("theme").innerHTML = "";
-    document.getElementById("theme").appendChild(divf);
+
     initialPage()//load svg's of Wards and map selector
   })
   //Create a selector with the datasets of the selected theme
@@ -364,6 +356,21 @@
     }
     //load svg's of Wards and map selector
     function initialPage(){
+
+      var selectTheme = '<select name="selectTheme" onChange="themeDataset(this.value)"><option value="{}">Select a Theme</option>';
+      for (var i = 0; i < themeUrls.length; i++) {
+        selectTheme += '<option value="{£name£:£' + themeUrls[i].theme + '£,£url£:£' + themeUrls[i].url + '£}"';
+        selectTheme += '>' + themeUrls[i].theme + '</option>';
+      }
+      selectTheme += '</select>';
+      var divf = document.createElement('div');
+      divf.innerHTML = selectTheme;
+      document.getElementById("theme").innerHTML = "";
+      document.getElementById("theme").appendChild(divf);
+
+      document.getElementById("map").innerHTML=""
+      document.getElementById("dataset").innerHTML=""
+
       var width = 600;
       var height = 560;
       var svg = d3.select("#map")
@@ -383,9 +390,6 @@
       .attr("d", path)
       .attr("class", function(d) {return "boundary " + d.properties.area_name} )
       .on("click", function(d) {
-        d3.select(this).call(plotSVG,d.properties)
-      })
-      .on("mouseover", function(d) {
         d3.select(this).call(plotSVG,d.properties)
       })
       plotSVG([],{area_name:"Clifford"})

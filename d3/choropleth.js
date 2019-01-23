@@ -76,33 +76,33 @@ var numDigits = (not_decimal<0)?",.0f":",." + (char_array.length - not_decimal -
               svg.select(".legend")
                   .call(legend);
               // Title
-              svg.append("g")
+              svg.append("text")
                 .attr("transform", "translate(10, 20)")
-                .append("text")
+                .attr("class", "choroTitle")
                 .text(title)
                 .style("font-family", "Roboto")
                 .style("font-size", "18px")
                 .style("fill", "#757575");
               // Subtitle
-              svg.append("g")
+              svg.append("text")
                 .attr("transform", "translate(10, 40)")
-                .append("text")
+                .attr("class", "choroSubtitle")
                 .text(subtitle)
                 .style("font-family", "Roboto")
                 .style("font-size", "14px")
                 .style("fill", "#757575")
                 // Source label
-                svg.append("g")
+                svg.append("text")
                   .attr("transform", "translate(10, 540)")
-                  .append("text")
+                  .attr("class", "choroSource")
                   .text(source)
                   .style("font-family", "Roboto")
                   .style("font-size", "10px")
                   .style("fill", "#757575");
                   //copyright
-                svg.append("g")
+                svg.append("text")
                   .attr("transform", "translate(10, 555)")
-                  .append("text")
+                  .attr("class", "choroNote")
                   .text("Contains National Statistics and OS data © Crown copyright and database right " + newDate.getFullYear())
                   .style("font-family", "Roboto")
                   .style("font-size", "10px")
