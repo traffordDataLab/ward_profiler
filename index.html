@@ -321,7 +321,7 @@
       }
       var elems=document.getElementsByClassName("stick")
       for (var i = 0; i<elems.length; i++) {
-        elems[i].style.stroke = "#757575";
+        elems[i].style.stroke = "#ccc";
       }
 
       var elems=document.getElementsByClassName(d.area_name)
@@ -359,6 +359,7 @@
 
       document.getElementById("map").innerHTML=""
       document.getElementById("dataset").innerHTML=""
+      document.getElementById("bestFitLegend").classList.remove("visible");
 
       var width = 600;
       var height = 560;
