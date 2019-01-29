@@ -8,6 +8,7 @@
   <title>Trafford ward profiler</title>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.js"></script>
+  <script src="https://www.trafforddatalab.io/assets/javascript/labGetQryStrValByKey.js"></script>
   <script src="d3/choropleth.js"></script>
   <script src="d3/lollypopChart.js"></script>
   <style>
@@ -31,7 +32,7 @@
     font-family: 'Roboto', sans-serif;
     src: url("https://fonts.googleapis.com/css?family=Open+Sans|Roboto'");
   }
-  h3, .placeLabel, .legend, .legendTitle, #bestFitLegend, #description,
+  h3, .placeLabel, .legend, .legendTitle, #bestFitLegend, #datasetDescription, #description, #download,
   .header, .choroTitle, .choroSubtitle, .choroSource, .choroNote, .valueLabel, .tickLabel
   {
     font-family: 'Roboto', sans-serif;
@@ -135,16 +136,35 @@
     color: black;
     padding: 10px 3.1% 0px 3.1%;
   }
-  #description
+  #datasetDescription
   {
     font-size: 16px;
     color: black;
     clear: both;
-    padding: 10px 3.1% 0px 3.1%;
+    padding: 10px 3.1% 10px 3.1%;
+  }
+  #description
+  {
+    text-align: left;
+    padding-right: 20px;
   }
   #description p
   {
     font-size: 12px;
+  }
+  #download
+  {
+    padding: 10px 3.1% 0px 3.1%;
+    font-size: 14px;
+  }
+  #downloadCSV{
+    background-color: grey;
+    color: white;
+    width:36px;
+    cursor:pointer;
+    margin-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
   }
   .clearb
   {
@@ -161,14 +181,16 @@
   }
   .eight0
   {
-    width: 85%;
+    width: 90%;
+    text-align: center;
   }
   _:-ms-fullscreen, :root #map, #bar{
     height:35vw;
   }
   @media (max-width:800px)
   {
-    #mapContainer, #barCointainer{
+    #mapContainer, #barCointainer
+    {
       width:95%;
     }
     #map, #bar
@@ -182,7 +204,11 @@
     }
     #bestFitLegend, #description
     {
-      padding: 10px 0px 0px 0px;
+      padding: 10px 0px 10px 0px;
+    }
+    #datasetDescription, #bestFitLegend, #download
+    {
+      padding-left: 0px;
     }
   }
   </style>
@@ -198,16 +224,22 @@
     <div id="svgBFM"></div>
   </div>
   <div class="clearb">
+    <div id="datasetDescription" class="clearb"></div>
     <div id="mapContainer">
       <div id="map"></div>
     </div>
     <div id="barCointainer">
+      <div id="description" class="clearb"></div>
       <div id="bar"></div>
     </div>
   </div>
   <div id="bestFitLegend" class="clearb hidden">Note: The figures displayed correspond to data aggregated from the <a onclick='showBestFitMap()'>best-fit LSOAs to the Ward</a> according to the ONS.</div>
-  <div id="description" class="clearb"></div>
+  <div id="download" class="clearb"><!--Download <span id='downloadCSV' onclick='createCSV()'> CSV</span>--></div>
   <script type="text/javascript">
+
+  window.onpopstate = function(event) {
+    window.location.reload(true)
+  };
 
   themeUrls=[{theme:"Communications", url:"https://www.trafforddatalab.io/ward_data/communications/meta.csv"},
   {theme:"Community safety", url:"https://www.trafforddatalab.io/ward_data/community_safety/meta.csv"},
@@ -221,20 +253,34 @@
   {theme:"Housing", url:"https://www.trafforddatalab.io/ward_data/housing/meta.csv"},
   {theme:"Labour market", url:"https://www.trafforddatalab.io/ward_data/labour_market/meta.csv"},
   {theme:"Transport", url:"https://www.trafforddatalab.io/ward_data/transport/meta.csv"}]
-
+  currentTheme = ""
   var currentDatasetList=[]
   //Load geojson and create the theme selector
   var geoJsonUrl="https://www.trafforddatalab.io/spatial_data/ward/2017/trafford_ward_super_generalised.geojson"
   d3.json(geoJsonUrl, function (error, json1) {
     json=json1;
-
-    initialPage()//load svg's of Wards and map selector
+    themeSelector()
+    readURLData()
   })
+  function themeSelector(){
+    var selectTheme = '<select id="selectTheme" name="selectTheme" onChange="themeDataset(this.value)"><option value="{}">Select a Theme</option>';
+    for (var i = 0; i < themeUrls.length; i++) {
+      selectTheme += '<option value="{£name£:£' + themeUrls[i].theme + '£,£url£:£' + themeUrls[i].url + '£}"';
+      selectTheme += '>' + themeUrls[i].theme + '</option>';
+    }
+    selectTheme += '</select>';
+    var divf = document.createElement('div');
+    divf.innerHTML = selectTheme;
+    document.getElementById("theme").innerHTML = "";
+    document.getElementById("theme").appendChild(divf);
+  }
+
   //Create a selector with the datasets of the selected theme
   function themeDataset(obj){
     var keyObj=JSON.parse(obj.replace(/£/g, '"'));
     var name = keyObj["name"];
     var url = keyObj["url"];
+    currentTheme=name;
     d3.csv(url, function(error, data) {
       currentDatasetList=data;
       popSelect(data,'dataset','callChoro')
@@ -262,6 +308,8 @@
       var description = currentDatasetList[+index]["description"]
       var source = currentDatasetList[+index]["source"]
       var period = currentDatasetList[+index]["period"]
+      //create download button
+      document.getElementById("download").innerHTML='Download <a class="labButton" href="'+ url +'" download>CSV</a>'
       d3.csv(url, function(error, data) {
         if (geography == "Best-fit ward"){
           document.getElementById("bestFitLegend").classList.add("visible");
@@ -282,6 +330,7 @@
         }
         document.getElementById("map").innerHTML=""
         document.getElementById("bar").innerHTML=""
+        document.getElementById("description").innerHTML=""
         var objChoro={data:json,
           container:"#map",
           title:name,
@@ -298,7 +347,9 @@
             palette:["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"]//["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"]
           }
           lollypopChart(objLPC)
-          document.getElementById("description").innerHTML=description
+          document.getElementById("datasetDescription").innerHTML=description
+          var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?theme=' + encodeURIComponent(currentTheme) + '&name=' + encodeURIComponent(name);
+          window.history.pushState({path:newurl},'',newurl);
         })
       }
     }
@@ -345,21 +396,16 @@
     }
     //load svg's of Wards and map selector
     function initialPage(){
+      var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname
+      window.history.pushState({path:newurl},'',newurl);
 
-      var selectTheme = '<select name="selectTheme" onChange="themeDataset(this.value)"><option value="{}">Select a Theme</option>';
-      for (var i = 0; i < themeUrls.length; i++) {
-        selectTheme += '<option value="{£name£:£' + themeUrls[i].theme + '£,£url£:£' + themeUrls[i].url + '£}"';
-        selectTheme += '>' + themeUrls[i].theme + '</option>';
-      }
-      selectTheme += '</select>';
-      var divf = document.createElement('div');
-      divf.innerHTML = selectTheme;
-      document.getElementById("theme").innerHTML = "";
-      document.getElementById("theme").appendChild(divf);
-
+      document.getElementById("selectTheme").selectedIndex = 0;
+      document.getElementById('selectTheme').value = '{}';
       document.getElementById("map").innerHTML=""
       document.getElementById("dataset").innerHTML=""
+      document.getElementById("datasetDescription").innerHTML=""
       document.getElementById("bestFitLegend").classList.remove("visible");
+      document.getElementById("download").innerHTML=""
 
       var width = 600;
       var height = 560;
@@ -368,7 +414,7 @@
       .attr("viewBox", "0 0 " + width + " " + height)
       .attr("preserveAspectRatio", "xMinYMin meet")
       var projection = d3.geoMercator()
-      .center([ -2.35533605967,53.4190090526 ])
+      .center([ -2.35533605967, 53.4190090526 ])
       .translate([width/2, height/2])
       .scale([width * 200]);
       var path = d3.geoPath()
@@ -440,7 +486,7 @@
 
       "Village":{slugName:"Village", description:"Village ward is on the eastern boundary of the Borough adjoining Manchester along Brooklands Road. To the south are Timperley wedge and the Bollin Valley and to the west the residential area of Timperley. Within the ward is the regeneration area of Broomwood, which contains a variety of greenspaces including Brooks Drive which runs from the A560 roundabout through the ward and forms part of a linear walkway and cycleway to link through to Davenport Green. Whilst the ward is fairly affluent it has pockets which face significant challenges."}}
 
-      document.getElementById("bar").innerHTML='<div class="eight0"><object width="100%" type="image/svg+xml" data="https://www.trafforddatalab.io/info/wards/maps/' + nameObj[d.area_name]["slugName"] + '/output/figures/ward_plot.svg"></object></div>'
+      document.getElementById("bar").innerHTML='<div class="eight0" ><object width="70%" type="image/svg+xml" data="https://www.trafforddatalab.io/info/wards/maps/' + nameObj[d.area_name]["slugName"] + '/output/figures/ward_plot.svg"></object></div>'
       document.getElementById("description").innerHTML="<h3>" + d.area_name + "</h3><p>" + nameObj[d.area_name]["description"] + "</p>"
     }
 
@@ -452,6 +498,42 @@
     function removeBestFitMap(){
       document.getElementById("svgBFM").innerHTML=''
       document.getElementById("bestFitMap").classList.remove("visible");
+    }
+
+    function updateURL(){
+      if (/E05/.test(areaCode) ){
+        var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code='+areaCode+'&name='+ encodeURIComponent(areaName) + '&within=' + encodeURIComponent(nameObj['la']);
+      } else if (!/E01/.test(areaCode) ){
+        var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code='+areaCode+'&name='+ encodeURIComponent(areaName);
+      }
+      window.history.pushState({path:newurl},'',newurl);
+    }
+
+
+    function readURLData(){
+      var theme=labGetQryStrValByKey("theme")
+      var dataset=labGetQryStrValByKey("name")
+      if (typeof theme  == "string"){
+        for (var i = 0; i < themeUrls.length; i++) {
+          if(theme == themeUrls[i].theme){
+
+            d3.csv(themeUrls[i].url, function(error, data) {
+              currentDatasetList=data;
+              for (var j = 0; j < data.length; j++) {
+                if(dataset == data[j].indicator){
+                  currentTheme=theme
+                  callChoro(j)
+                  break;
+                }
+              }
+            })
+            break;
+          }
+        }
+
+      }else{
+        initialPage()
+      }
     }
 
 
