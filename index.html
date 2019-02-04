@@ -3,9 +3,15 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <meta charset="utf-8">
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@traffordDataLab" />
+  <meta name="twitter:title" content="Trafford ward profiler" />
+  <meta name="twitter:description" content="Interactively visualise indicators for the 21 Trafford wards categorised by theme." />
+  <meta name="twitter:image" content="https://www.trafforddatalab.io/ward_profiler/twitter-card.png" />
+  <meta name="twitter:image:alt" content="Partial view of the choropleth and lollypop chart from the Trafford ward profiler" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto"/>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
-  <title>Trafford ward profiler</title>
+  <title id="pageTitle">Trafford ward profiler</title>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.js"></script>
   <script src="https://www.trafforddatalab.io/assets/javascript/labGetQryStrValByKey.js"></script>
@@ -367,6 +373,7 @@
           document.getElementById("datasetDescription").innerHTML=description
           //create download button
           document.getElementById("download").innerHTML='Download  <a class="labButton" href="'+ url +'" download>Data</a><a class="labButton" href="'+ urlCode +'" download>R code</a>'
+          document.getElementById("pageTitle").innerHTML="Trafford ward profiler:"+name
           var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?theme=' + encodeURIComponent(currentTheme) + '&name=' + encodeURIComponent(name);
           window.history.pushState({path:newurl},'',newurl);
         })
@@ -415,6 +422,7 @@
     }
     //load svg's of Wards and map selector
     function initialPage(){
+      document.getElementById("pageTitle").innerHTML="Trafford ward profiler"
       var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname
       window.history.pushState({path:newurl},'',newurl);
 
