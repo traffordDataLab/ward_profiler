@@ -39,20 +39,33 @@
   }
   .header
   {
-    padding-top: 5px;
-    padding-left: 0px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #ccc;
     font-size: 20px;
+    color: #757575;
     cursor: pointer;
+  }
+  #headerTitle
+  {
+    float: left;
+    display: inline-block;
+    padding-top: 10px;
+    padding-left: 10px;
+  }
+  #labLogo
+  {
+    float: left;
+    display: inline-block;
+  }
+  #main
+  {
+    border-top: 1px solid #ccc;
   }
   #bestFitMap
   {
     max-width: 100%;
     position: fixed;
     top: 10px;
-    left: 35px;
-    right:35px;
+    left: 10px;
+    right:10px;
     bottom:10px;
     background-color: white;
     overflow-y: auto;
@@ -62,12 +75,9 @@
   #closeBotton
   {
     position: fixed;
-    top: 10px;
-    left: 35px;
-    width: 25px;
-    height: 25px;
+    top: 15px;
+    left: 20px;
     font-size: 25px;
-    line-height: 25px;
     color: #757575;
     text-align: center;
     cursor: pointer;
@@ -79,7 +89,6 @@
     stroke-opacity: 0.5;
     stroke-width: 1px;
     stroke-linejoin: round;
-    z-index: 10;
   }
   .circle{
     stroke:#757575;
@@ -114,7 +123,7 @@
     float:left;
     text-align: center;
   }
-  #map
+  #map, #bar
   {
     width: 90%;
     display: inline-block;
@@ -125,23 +134,18 @@
     float:right;
     text-align: center;
   }
-  #bar
-  {
-    width: 90%;
-    display: inline-block;
-  }
   #bestFitLegend
   {
     font-size: 12px;
     color: black;
-    padding: 10px 3.1% 0px 3.1%;
+    padding: 10px 3.3% 0px 3.3%;
   }
   #datasetDescription
   {
     font-size: 16px;
     color: black;
     clear: both;
-    padding: 10px 3.1% 10px 3.1%;
+    padding: 10px 3.3% 10px 3.3%;
   }
   #description
   {
@@ -154,18 +158,25 @@
   }
   #download
   {
-    padding: 10px 3.1% 0px 3.1%;
-    font-size: 14px;
+    padding: 10px 3.3% 0px 3.3%;
+    font-size: 12px;
   }
-  #downloadCSV{
-    background-color: grey;
-    color: white;
-    width:36px;
-    cursor:pointer;
-    margin-bottom: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
-  }
+  .labButton
+{
+    background-color: #757575;
+    color: #fff;
+    padding: 3px 5px 3px 5px;
+    margin: 0 0 7px 10px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.labButton:hover
+{
+    cursor: pointer;
+    background-color: #fc6721;
+    text-decoration: none;
+}
   .clearb
   {
     clear: both;
@@ -173,7 +184,6 @@
   .hidden
   {
     display: none;
-    color: #757575
   }
   .visible
   {
@@ -191,7 +201,7 @@
   {
     #mapContainer, #barCointainer
     {
-      width:95%;
+      width:100%;
     }
     #map, #bar
     {
@@ -201,6 +211,12 @@
     {
       padding-top: 0px;
       padding-bottom: 0px;
+      max-width: 100%;
+    }
+    #datasetSelect
+    {
+      max-width: 100%;
+      text-overflow: ellipsis;
     }
     #bestFitLegend, #description
     {
@@ -216,8 +232,14 @@
 </head>
 
 <body>
-  <div class="header" onclick="initialPage()">Trafford ward profiler</div>
-  <div id="theme" ></div>
+  <div class="header clearb">
+    <div class="clearb" onclick="initialPage()">
+      <div id="labLogo"><img src="https://www.trafforddatalab.io/assets/logo/trafforddatalab_logo.svg" alt="Trafford Data Lab" width="93" class="traffordDataLabLogo"/></div>
+      <div id="headerTitle">Trafford ward profiler</div>
+    </div>
+  </div>
+  <div id="main" class="clearb">
+  <div id="theme"></div>
   <div id="dataset"></div>
   <div id="bestFitMap" class="hidden">
     <div id="closeBotton" onclick="removeBestFitMap()"><span class="fas fa-times"></span></div>
@@ -234,7 +256,8 @@
     </div>
   </div>
   <div id="bestFitLegend" class="clearb hidden">Note: The figures displayed correspond to data aggregated from the <a onclick='showBestFitMap()'>best-fit LSOAs to the Ward</a> according to the ONS.</div>
-  <div id="download" class="clearb"><!--Download <span id='downloadCSV' onclick='createCSV()'> CSV</span>--></div>
+  <div id="download" class="clearb"></div>
+</div>
   <script type="text/javascript">
 
   window.onpopstate = function(event) {
@@ -265,21 +288,17 @@
   function themeSelector(){
     var selectTheme = '<select id="selectTheme" name="selectTheme" onChange="themeDataset(this.value)"><option value="{}">Select a Theme</option>';
     for (var i = 0; i < themeUrls.length; i++) {
-      selectTheme += '<option value="{£name£:£' + themeUrls[i].theme + '£,£url£:£' + themeUrls[i].url + '£}"';
+      selectTheme += '<option value="' + i + '"';
       selectTheme += '>' + themeUrls[i].theme + '</option>';
     }
     selectTheme += '</select>';
-    var divf = document.createElement('div');
-    divf.innerHTML = selectTheme;
-    document.getElementById("theme").innerHTML = "";
-    document.getElementById("theme").appendChild(divf);
+    document.getElementById("theme").innerHTML = selectTheme;
   }
 
   //Create a selector with the datasets of the selected theme
-  function themeDataset(obj){
-    var keyObj=JSON.parse(obj.replace(/£/g, '"'));
-    var name = keyObj["name"];
-    var url = keyObj["url"];
+  function themeDataset(val){
+    var name = themeUrls[+val].theme
+    var url = themeUrls[+val].url
     currentTheme=name;
     d3.csv(url, function(error, data) {
       currentDatasetList=data;
@@ -288,28 +307,26 @@
   }
 
   function popSelect(data,container,onChangeFun) {
-    var select = '<select name="selectDataset" onChange="' + onChangeFun + '(this.value)" class="datasetSelect"><option value="{}">Select a ' + container + '</option>';
+    var select = '<select id="datasetSelect" name="selectDataset" onChange="' + onChangeFun + '(this.value)"><option value="{}">Select a ' + container + '</option>';
     for (var i = 0; i < data.length; i++) {
       select += '<option value="'+ i + '"';
       select += '>' + data[i].indicator + '</option>';
     }
     select += '</select>';
-    var divf = document.createElement('div');
-    divf.innerHTML = select;
-    document.getElementById(container).innerHTML = "";
-    document.getElementById(container).appendChild(divf);
+    document.getElementById(container).innerHTML = select;
   }
+
   //plot Choropleth and lollypop Chart
   function callChoro(index){
     if (index!= "{}"){
       var name = currentDatasetList[+index]["indicator"];
       var url = currentDatasetList[+index]["data"];
+      var urlCode = currentDatasetList[+index]["code"];
       var geography = currentDatasetList[+index]["geography"];
       var description = currentDatasetList[+index]["description"]
       var source = currentDatasetList[+index]["source"]
       var period = currentDatasetList[+index]["period"]
-      //create download button
-      document.getElementById("download").innerHTML='Download <a class="labButton" href="'+ url +'" download>CSV</a>'
+
       d3.csv(url, function(error, data) {
         if (geography == "Best-fit ward"){
           document.getElementById("bestFitLegend").classList.add("visible");
@@ -338,16 +355,18 @@
           clickFunction:highlightArea,
           legendTitle:data[1]['measure'],
           source:source,
-          palette:["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"]//["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"]
+          palette:["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"]
         }
           choro(objChoro)
           var objLPC={data:data,
             container:"#bar",
             clickFunction:highlightArea,
-            palette:["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"]//["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"]
+            palette:["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"]
           }
           lollypopChart(objLPC)
           document.getElementById("datasetDescription").innerHTML=description
+          //create download button
+          document.getElementById("download").innerHTML='Download  <a class="labButton" href="'+ url +'" download>Data</a><a class="labButton" href="'+ urlCode +'" download>R code</a>'
           var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?theme=' + encodeURIComponent(currentTheme) + '&name=' + encodeURIComponent(name);
           window.history.pushState({path:newurl},'',newurl);
         })
@@ -491,7 +510,7 @@
     }
 
     function showBestFitMap(){
-      document.getElementById("svgBFM").innerHTML='<object width="100%" type="image/png" data="https://www.trafforddatalab.io/maps/static/output/trafford_best-fit_wards.png"></object>'
+      document.getElementById("svgBFM").innerHTML='<img width="100%" src="https://www.trafforddatalab.io/maps/static/output/trafford_best-fit_wards.png"></img>'
       document.getElementById("bestFitMap").classList.add("visible");
     }
 
@@ -500,29 +519,23 @@
       document.getElementById("bestFitMap").classList.remove("visible");
     }
 
-    function updateURL(){
-      if (/E05/.test(areaCode) ){
-        var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code='+areaCode+'&name='+ encodeURIComponent(areaName) + '&within=' + encodeURIComponent(nameObj['la']);
-      } else if (!/E01/.test(areaCode) ){
-        var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code='+areaCode+'&name='+ encodeURIComponent(areaName);
-      }
-      window.history.pushState({path:newurl},'',newurl);
-    }
-
-
     function readURLData(){
       var theme=labGetQryStrValByKey("theme")
       var dataset=labGetQryStrValByKey("name")
       if (typeof theme  == "string"){
         for (var i = 0; i < themeUrls.length; i++) {
           if(theme == themeUrls[i].theme){
-
+            document.getElementById("selectTheme").selectedIndex = i;
+            document.getElementById('selectTheme').value = i.toString();
             d3.csv(themeUrls[i].url, function(error, data) {
               currentDatasetList=data;
               for (var j = 0; j < data.length; j++) {
                 if(dataset == data[j].indicator){
                   currentTheme=theme
                   callChoro(j)
+                  popSelect(data,'dataset','callChoro')
+                  document.getElementById("datasetSelect").selectedIndex = j;
+                  document.getElementById('datasetSelect').value = j.toString();
                   break;
                 }
               }

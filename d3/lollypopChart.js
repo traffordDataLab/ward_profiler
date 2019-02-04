@@ -79,9 +79,9 @@ function lollypopChart(obj){
   .style("color", "#757575")
   .attr("transform", function(d) {
     if (d.value<0) {
-      return "translate(10," + 0 + ")";
+      return "translate(12," + 0 + ")";
     } else {
-      return "translate(-4," + 0 + ")";
+      return "translate(-6," + 0 + ")";
     }
   })
   .style("text-anchor", function(d) {

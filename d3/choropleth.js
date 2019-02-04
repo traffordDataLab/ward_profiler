@@ -54,7 +54,7 @@ var numDigits = (not_decimal<0)?",.0f":",." + (char_array.length - not_decimal -
              })
   				   .style("fill", function(d) {
   				   		var value = d.properties.value;
-                if (value) {
+                if (!isNaN(parseFloat(value)) && isFinite(value)) {
                   return quantize(value);
                 } else {
                   return "#ccc";
