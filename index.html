@@ -237,7 +237,7 @@
 
 </head>
 
-<body>
+<body onclick="clickEvent(event)">
   <div class="header clearb">
     <div class="clearb" onclick="initialPage()">
       <div id="labLogo"><a href="https://www.trafforddatalab.io/index.html" target="_blank"><img src="https://www.trafforddatalab.io/assets/logo/trafforddatalab_logo.svg" alt="Trafford Data Lab" width="93" height="31" class="traffordDataLabLogo"/></a></div>
@@ -382,24 +382,7 @@
 
     function highlightArea(b,d){
 
-      var elems=document.getElementsByClassName("boundary")
-      for (var i = 0; i<elems.length; i++) {
-          elems[i].style.stroke= "#757575";
-          elems[i].style.strokeWidth= "1px";
-      }
-      var elems=document.getElementsByClassName("circle")
-      for (var i = 0; i<elems.length; i++) {
-        elems[i].style.stroke= "#757575";
-        elems[i].style.strokeWidth= "1px";
-      }
-      var elems=document.getElementsByClassName("tickLabel")
-      for (var i = 0; i<elems.length; i++) {
-        elems[i].style.fill = "#757575";
-      }
-      var elems=document.getElementsByClassName("stick")
-      for (var i = 0; i<elems.length; i++) {
-        elems[i].style.stroke = "#ccc";
-      }
+      clearSelection()
 
       var elems=document.getElementsByClassName(d.area_name)
       for (var i = 0; i<elems.length; i++) {
@@ -418,6 +401,27 @@
         if(elems[i].tagName=="line"){
           elems[i].style.stroke= "black";
         }
+      }
+    }
+
+    function clearSelection(){
+      var elems=document.getElementsByClassName("boundary")
+      for (var i = 0; i<elems.length; i++) {
+          elems[i].style.stroke= "#757575";
+          elems[i].style.strokeWidth= "1px";
+      }
+      var elems=document.getElementsByClassName("circle")
+      for (var i = 0; i<elems.length; i++) {
+        elems[i].style.stroke= "#757575";
+        elems[i].style.strokeWidth= "1px";
+      }
+      var elems=document.getElementsByClassName("tickLabel")
+      for (var i = 0; i<elems.length; i++) {
+        elems[i].style.fill = "#757575";
+      }
+      var elems=document.getElementsByClassName("stick")
+      for (var i = 0; i<elems.length; i++) {
+        elems[i].style.stroke = "#ccc";
       }
     }
     //load svg's of Wards and map selector
@@ -554,6 +558,12 @@
 
       }else{
         initialPage()
+      }
+    }
+
+    function clickEvent(event) {
+      if (event.target.nodeName=="svg"){
+          clearSelection()
       }
     }
 
