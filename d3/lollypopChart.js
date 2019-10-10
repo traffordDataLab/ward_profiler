@@ -25,6 +25,14 @@ function lollypopChart(obj){
     return b.value - a.value;
   })
 
+  var min = d3.min(data, function (d) {
+    return +d.value;
+  })
+
+  var max = d3.max(data, function (d) {
+    return +d.value;
+  })
+
   //width height and margins
 
   var margin = {top: 50, right: 70, bottom: 20, left: 20};
@@ -46,9 +54,7 @@ function lollypopChart(obj){
   //create Scales
   var hx = d3.scaleLinear()
   .range([0, 3*widthG/4-25])
-  .domain([0, d3.max(data, function (d) {
-    return +d.value;
-  })]);
+  .domain([ min<0 ? min:0 , max]);
 
   var hy = d3.scaleBand()
   .rangeRound([heightG, 0])
@@ -62,6 +68,7 @@ function lollypopChart(obj){
     d3.min(data, function(d) { return parseFloat(d.value); }),
     d3.max(data, function(d) { return parseFloat(d.value); })
   ]);
+  
   //create y axis
   var yAxis = d3.axisLeft(hy)
   .tickSize(0)
@@ -69,6 +76,7 @@ function lollypopChart(obj){
   var gy = lollyPC.append("g")
   .attr("class", "y axis")
   .call(yAxis)
+  .attr("transform", "translate(" + hx(0) + ", 0)");
 
   //Tick labels
   gy.selectAll("text")
