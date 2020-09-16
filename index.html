@@ -340,6 +340,8 @@
         else if (geography == "Electoral ward"){
           document.getElementById("bestFitLegend").classList.remove("visible");
         }
+        var measure = data[0].measure;
+        var data = data.filter(a=>a.measure==measure);
         for (var i = 0; i < data.length; i++) {
           var code = data[i].area_code;
           var value = parseFloat(data[i].value);
