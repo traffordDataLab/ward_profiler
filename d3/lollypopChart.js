@@ -19,10 +19,15 @@ function lollypopChart(obj){
   var clickFunction = (obj.clickFunction) ? obj.clickFunction:""
   var markClick  = (obj.markClick) ? obj.markClick:false
   var indexToMark = (obj.indexToMark) ? obj.indexToMark:""
-
+  
   var numFormat = d3.format(",");
   data.sort(function(a, b){
-    return b.value - a.value;
+  if(isFinite(b.value - a.value)) {
+    return b.value - a.value; 
+  } else {
+    return isFinite(a.value) ? -1 : 1;
+  }
+
   })
 
   var min = d3.min(data, function (d) {
@@ -68,7 +73,7 @@ function lollypopChart(obj){
     d3.min(data, function(d) { return parseFloat(d.value); }),
     d3.max(data, function(d) { return parseFloat(d.value); })
   ]);
-  
+
   //create y axis
   var yAxis = d3.axisLeft(hy)
   .tickSize(0)
@@ -129,7 +134,7 @@ function lollypopChart(obj){
   .attr("r", "7")
   .attr("class", function(d) {return "circle " + d.area_name})
   .style("fill", function(d) {
-    if (d.value) {
+    if (!isNaN(parseFloat(d.value)) && isFinite(d.value)) {
       return quantize(d.value);
     } else {
       return "#ccc";
@@ -147,7 +152,11 @@ function lollypopChart(obj){
   lollypops.append("text")
   .attr("class", "valueLabel")
   .text(function (d) {
-    return numFormat(d.value);
+    if (!isNaN(parseFloat(d.value)) && isFinite(d.value)) {
+      return numFormat(d.value);
+    } else {
+      return "Not Available";
+    }
   })
   .style("font-family", "Roboto")
   .style("font-size", "12px")
@@ -158,6 +167,8 @@ function lollypopChart(obj){
   .attr("x", function(d) {
     if (d.value<0) {
       return hx(d.value)-this.getBBox().width-10;
+    } else if (isNaN(parseFloat(d.value))){
+      return 10;
     } else {
       return hx(d.value) + 10;
     }
