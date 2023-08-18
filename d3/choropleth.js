@@ -1,4 +1,4 @@
-// data format: geojson with features containing properties.value(a number) and properties.area_name (a string) to produce the Choropleth
+// data format: geojson with features containing properties.value(a number) and  properties.area_code (a string) to produce the Choropleth
 
 function choro(obj){
 
@@ -17,6 +17,8 @@ var height = (obj.height) ? obj.height:560;
 var clickFunction = (obj.clickFunction) ? obj.clickFunction:""
 var markClick  = (obj.markClick) ? obj.markClick:false
 var indexToMark = (obj.indexToMark) ? obj.indexToMark:""
+
+console.log(data)
 
 var char_array = data.features[1].properties.value.toString().split(""); // split every single char
 var not_decimal = char_array.lastIndexOf(".");
@@ -45,7 +47,7 @@ var numDigits = (not_decimal<0)?",.0f":",." + (char_array.length - not_decimal -
   				   .enter()
   				   .append("path")
   				   .attr("d", path)
-             .attr("class", function(d) {return "boundary " + d.properties.area_name} )
+             .attr("class", function(d) {return "boundary " + d.properties.area_code} )
              .on("click", function(d) {
                d3.select(this).call(clickFunction,d.properties)
              })
