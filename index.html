@@ -15,12 +15,12 @@
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.js"></script>
   <script src="https://www.trafforddatalab.io/assets/javascript/labGetQryStrValByKey.js"></script>
-  <script src="https://www.trafforddatalab.io/ward_profiler/d3/choropleth.js"></script>
-  <script src="https://www.trafforddatalab.io/ward_profiler/d3/lollypopChart.js"></script>
+  <script src="d3/choropleth.js"></script>
+  <script src="d3/lollypopChart.js"></script>
   <style>
   a
   {
-    color: #fc6721;
+    color: #046dc3;
     text-decoration: none;
   }
   a:hover
@@ -177,11 +177,10 @@
     display: inline-block;
 }
 
-.labButton:hover
+.labButton:hover, .labBorder:hover
 {
-    cursor: pointer;
-    background-color: #fc6721;
-    text-decoration: none;
+    border: 1px solid #5d77a3;
+    box-shadow: 0 0 5px #5d77a3;
 }
   .clearb
   {
@@ -247,10 +246,6 @@
   <div id="main" class="clearb">
   <div id="theme"></div>
   <div id="dataset"></div>
-  <div id="bestFitMap" class="hidden">
-    <div id="closeBotton" onclick="removeBestFitMap()"><span class="fas fa-times"></span></div>
-    <div id="svgBFM"></div>
-  </div>
   <div class="clearb">
     <div id="datasetDescription" class="clearb"></div>
     <div id="mapContainer">
@@ -261,7 +256,7 @@
       <div id="bar"></div>
     </div>
   </div>
-  <div id="bestFitLegend" class="clearb hidden">Note: The figures displayed correspond to data aggregated from the <a onclick='showBestFitMap()'>best-fit LSOAs to the Ward</a> according to the ONS.</div>
+  <div id="bestFitLegend" class="clearb hidden">Note: The figures displayed correspond to data aggregated from the <a href="https://www.trafforddatalab.io/analysis/wards2023/Best-fit_OA_Ward2023.html" target="_blank">best-fit OAs to the Ward</a> according to the ONS.<br>Census data is subject to <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/methodologies/protectingpersonaldataincensus2021results" target="_blank">Statistical disclosure control</a> to avoid the release of confidential data. Totals may not sum due to the disclosure control applied.</div>
   <div id="download" class="clearb"></div>
 </div>
   <script type="text/javascript">
@@ -271,21 +266,22 @@
   };
 
   themeUrls=[{theme:"Communications", url:"https://www.trafforddatalab.io/ward_data/communications/meta.csv"},
-  {theme:"Community safety", url:"https://www.trafforddatalab.io/ward_data/community_safety/meta.csv"},
+  //{theme:"Community safety", url:"https://www.trafforddatalab.io/ward_data/community_safety/meta.csv"},
   {theme:"Demographics", url:"https://www.trafforddatalab.io/ward_data/demographics/meta.csv"},
   {theme:"Deprivation", url:"https://www.trafforddatalab.io/ward_data/deprivation/meta.csv"},
-  {theme:"Economy", url:"https://www.trafforddatalab.io/ward_data/economy/meta.csv"},
+  //{theme:"Economy", url:"https://www.trafforddatalab.io/ward_data/economy/meta.csv"},
   {theme:"Education", url:"https://www.trafforddatalab.io/ward_data/education/meta.csv"},
-  {theme:"Environment", url:"https://www.trafforddatalab.io/ward_data/environment/meta.csv"},
+  //{theme:"Environment", url:"https://www.trafforddatalab.io/ward_data/environment/meta.csv"},
   {theme:"Governance", url:"https://www.trafforddatalab.io/ward_data/governance/meta.csv"},
   {theme:"Health", url:"https://www.trafforddatalab.io/ward_data/health/meta.csv"},
   {theme:"Housing", url:"https://www.trafforddatalab.io/ward_data/housing/meta.csv"},
-  {theme:"Labour market", url:"https://www.trafforddatalab.io/ward_data/labour_market/meta.csv"},
-  {theme:"Transport", url:"https://www.trafforddatalab.io/ward_data/transport/meta.csv"}]
+  //{theme:"Labour market", url:"https://www.trafforddatalab.io/ward_data/labour_market/meta.csv"},
+  {theme:"Transport", url:"https://www.trafforddatalab.io/ward_data/transport/meta.csv"}
+  ]
   currentTheme = ""
   var currentDatasetList=[]
   //Load geojson and create the theme selector
-  var geoJsonUrl="https://www.trafforddatalab.io/spatial_data/ward/2017/trafford_ward_super_generalised.geojson"
+  var geoJsonUrl="https://www.trafforddatalab.io/spatial_data/ward/2023/trafford_ward_super_generalised.geojson"
   d3.json(geoJsonUrl, function (error, json1) {
     json=json1;
     themeSelector()
@@ -363,13 +359,13 @@
           clickFunction:highlightArea,
           legendTitle:data[1]['measure'],
           source:source,
-          palette:["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"]
+          palette:["#bcd2e8", "#9dc0d7", "#6c9cba", "#417196", "#1e3f66"]
         }
           choro(objChoro)
           var objLPC={data:data,
             container:"#bar",
             clickFunction:highlightArea,
-            palette:["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"]
+          palette:["#bcd2e8", "#9dc0d7", "#6c9cba", "#417196", "#1e3f66"]
           }
           lollypopChart(objLPC)
           document.getElementById("datasetDescription").innerHTML=description
@@ -386,7 +382,7 @@
 
       clearSelection()
 
-      var elems=document.getElementsByClassName(d.area_name)
+      var elems=document.getElementsByClassName(d.area_code)
       for (var i = 0; i<elems.length; i++) {
         if(elems[i].tagName=="path"){
           elems[i].style.stroke= "black";
@@ -461,7 +457,7 @@
       .on("click", function(d) {
         d3.select(this).call(plotSVG,d.properties)
       })
-      plotSVG([],{area_name:"Clifford"})
+      plotSVG([],{area_name:"Old Trafford"})
     }
 
     function plotSVG(b,d){
@@ -474,64 +470,55 @@
       var elems=document.getElementsByClassName(d.area_name)
       for (var i = 0; i<elems.length; i++) {
         if(elems[i].tagName=="path"){
-          elems[i].style.fill= "#fd8d3c";
+          elems[i].style.fill= "#5d77a3";
           elems[i].parentNode.appendChild(elems[i])
         }
-      }      var nameObj = {"Altrincham":{slugName:"Altrincham", description:"Altrincham is a sub-regional shopping centre, and Trafford's largest town. It's at the hub of south Manchester's modern transport infrastructure, complemented by an integrated rail, Metrolink and bus Interchange, which is undergoing redevelopment. It also acts as the commercial centre for the area providing extensive office accommodation. It has an historic market quarter, which regeneration works continue to modernise and upgrade. Major developments have taken place within the ward including the refurbishment of Altrincham Town Hall, a new piece of public art in the grounds of the Town Hall, Silver Blades Ice Rink, a six-screen Apollo Cinema including private car park, Altair, a proposed major development to include retail, leisure and housing, and the Stamford Quarter Retail Centre."},
+      }      var nameObj = {"Altrincham":{slugName:"Altrincham", description:"Altrincham is a sub-regional shopping centre, and Trafford's largest town. It's at the hub of south Manchester's modern transport infrastructure, complemented by an integrated rail, Metrolink and bus Interchange, which has undergone redevelopment. It also acts as the commercial centre for the area, providing extensive office accommodation. It has an historic market quarter, which regeneration works continue to modernise and upgrade. Major developments to taken place within the ward including a multi-million-pound refurbishment of Altrincham Leisure Centre, public realm improvements, revitalising the Stamford Quarter and The Grafton Centre."},
 
-      "Ashton upon Mersey":{slugName:"Ashton_upon_Mersey", description:"Ashton upon Mersey is densely populated and the majority of land is under private ownership including the golf course and sports facilities. There is a great deal of green space, albeit the majority is in private ownership, but provides opportunities for residents to access a number of recreational activities. It is a pleasant village with a variety of shops, pubs and restaurants. The boundary of this ward follows the River Mersey and the Carrington Spur with paths running through and adjacent to the private sites providing links to the Trans Pennine Trail."},
+      "Ashton upon Mersey":{slugName:"Ashton_upon_Mersey", description:"Ashton upon Mersey is densely populated, and the majority of land is under private ownership, including the golf course and sports facilities. There is a great deal of green space, which provides opportunities for residents to access a number of recreational activities. It is a pleasant village with a variety of shops, pubs and restaurants. The boundary of this ward follows the River Mersey and the Carrington Spur, with paths running through and adjacent to the private sites providing links to the Trans Pennine Trail."},
 
-      "Bowdon":{slugName:"Bowdon", description:"Bowdon is the largest ward in Trafford and is a combination of several small, rural villages surrounded by open countryside, including Dunham Massey Country Park and more densely populated residential areas. The majority of the ward is owned by the National Trust as part of the Dunham Massey Estate, which is a fantastic asset for the residents of the Borough. The Estate includes Dunham Massey Hall and a deer park. Bowdon is a semi-rural ward and has a low population density. Bowdon is a largely affluent ward and is an attractive place to live."},
+      "Bowdon":{slugName:"Bowdon", description:"Bowdon is the largest ward in Trafford and is a combination of several small, rural villages surrounded by open countryside. This includes Dunham Massey Country Park and more densely populated residential areas. The majority of the ward is owned by the National Trust as part of the Dunham Massey Estate, which is a fantastic asset for the residents of the borough. The Estate includes Dunham Massey Hall and a deer park, while the parish of Dunham Massey itself boasts 48 listed buildings. Bowdon is a semi-rural ward and has a low population density."},
 
-      "Broadheath":{slugName:"Broadheath", description:"Broadheath has a mix of land uses. To the south the Bridgewater Canal, industrial and retail areas, to the north a new housing development known as Stamford Brook. To the west it has agricultural areas with views across to Warburton and Dunham and to the east residential areas of Timperley. Broadheath has become an area of major regeneration. The development of a retail park on the site has seen some high profile retailers move to the area. The most recent piece of development is the Stamford Brook Development. The National Trust in partnership with Bryant Homes and Redrow Homes are providing just over 700 new energy efficient homes, new community woodland and a major river restoration project, the largest of its kind in the country. In addition Section 106 monies will provide a new community facility."},
+      "Broadheath":{slugName:"Broadheath", description:"Broadheath has a mix of land uses. To the south the Bridgewater Canal, industrial and retail areas, to the north a relatively new housing development known as Stamford Brook. To the west it has agricultural areas with views across to Warburton and Dunham and, to the east, residential areas of Timperley."},
 
-      "Brooklands":{slugName:"Brooklands", description:"Brooklands is a ward within the Sale area. It is a very attractive, affluent and pleasant place to live bounded by the A56 to the west and by Baguley Brook to the south. It has two distinct areas which are separated by the Bridgewater Canal and the Metrolink line. Brooklands ward has a Metrolink station and is the home of Sale Amateur Rugby Club. The area includes two parks, Walton Park to the west and Moor Nook to the east. Walton Park has a miniature railway, play areas, tennis courts, bowling greens and football pitches."},
+      "Brooklands":{slugName:"Brooklands", description:"Brooklands is a ward within the Sale area. It is a very attractive and affluent place to live, bounded by the A56 to the west and by Baguley Brook to the south. It has two distinct areas which are separated by the Bridgewater Canal and the Metrolink line. Brooklands ward has a Metrolink station and is the home of Sale Amateur Rugby Club. The area includes two parks, Walton Park to the west and Moor Nook to the east. Walton Park has a miniature railway, play areas, tennis courts, bowling greens and football pitches."},
 
-      "Bucklow-St Martins":{slugName:"Bucklow-St_Martins", description:"Bucklow - St Martins is the second largest ward in the Borough. It is characterised by large areas of agricultural green belt land including Carrington Moss. Within the ward are a large industrial complex and Carrington Business Park. Within the south east part of the ward are the villages of Carrington and Partington and within the eastern area is the residential area of Sale. The northern boundary of the site is bounded by the River Mersey. The ward is home to the Manchester United and Manchester City Football Clubs training grounds. Bucklow - St Martins has three very distinct areas with pockets of high deprivation and isolated communities."},
+      "Bucklow-St Martins":{slugName:"Bucklow-St_Martins", description:"Bucklow-St Martins is the second largest ward in the borough in terms of area. It is characterised by large areas of agricultural land, as well as Carrington Moss. Within the ward are a large industrial complex and Carrington Business Park. Within the south east part of the ward are the villages of Carrington and Partington, both of which have their own parish councils. The northern boundary of the site is bounded by the River Mersey. The ward is home to the Manchester United Football Club training grounds."},
 
-      "Clifford":{slugName:"Clifford", description:"Clifford is a small and densely populated ward at the north east tip of the Borough bordering Hulme in Manchester to the east and Whalley Range to the south. Physically it is characterised by dense residential areas of Victorian terraced housing and a diverse range of housing stock. Clifford is also known for its very diverse population, vibrant communities and active community groups, some are established and there are some newer groups. Clifford is undergoing significant transformation with the Old Trafford Master Plan and there is a lot of change to current housing."},
+      "Davyhulme":{slugName:"Davyhulme", description:"Davyhulme is bounded by the Manchester Ship Canal to the west, Davyhulme waste water treatment works to the north and residential areas of Davyhulme and Flixton to the east and south. The ward is mainly residential, with large areas of private open land along the canal edge. Trafford General Hospital – the birthplace of the NHS – is located in this ward."},
 
-      "Davyhulme East":{slugName:"Davyhulme_East", description:"Davyhulme East is in the north of Trafford and is bounded to the north by the Manchester Ship Canal and the Bridgewater Canal. The ward is home to the Trafford Centre, separated from the residential areas by the M60, the historical Barton Aqueduct, which crosses the Manchester Ship Canal and Barton Swing Bridge."},
+      "Flixton":{slugName:"Flixton", description:"Flixton is bounded by the Mersey Valley and the River Mersey to the south and is traversed by the Manchester to Liverpool railway line. Its population is concentrated in areas in the northern half of the ward; other areas are generally open. Flixton House, a late 18th-century Grade II listed building owned by the Council, is in the ward. It is now a popular wedding and events venue."},
 
-      "Davyhulme West":{slugName:"Davyhulme_West", description:"Davyhulme West is bounded by the Manchester Ship Canal to the west, Davyhulme waste water treatment works to the north and residential areas of Davyhulme and Flixton to the east and south. The ward is mainly residential with large areas of private open land along the canal edge and the Mersey Valley to the south east tip of the ward. Trafford General Hospital is located in this ward."},
+      "Gorse Hill & Cornbrook":{slugName:"Gorse_Hill_&_Cornbrook", description:"This is the northern most ward in Trafford. It is the third largest ward in area size and contains most of Trafford Park Industrial Estate. The majority of population are located within the ward's southern and eastern edge. The residential neighbourhoods within this area include the northern tip of Stretford in the south, together with Gorse Hill itself and Cornbrook in the eastern side. The ward is home to Manchester United Football Club and Lancashire Cricket Club, as well as Trafford Town Hall. The Media City development located on the Salford side of the Canal involving the BBC is generating significant development on the Trafford side, and Gorse Hill is also home to the iconic Coronation Street studio. Trafford Park railway station serves the ward for commuting to and from both Manchester and Liverpool."},
 
-      "Flixton":{slugName:"Flixton", description:"Flixton is bounded by the Mersey Valley and the River Mersey to the south and is traversed by the Manchester to Liverpool railway line. Its population is concentrated in areas in the northern half of the ward; other areas are generally open and include two golf courses (William Wroe and Flixton Golf Course)."},
+      "Hale Barns & Timperley South":{slugName:"Hale_Barns_&_Timperley_South", description:"Hale Barns & Timperley South lies at the southern tip of the borough. It is bounded to the east by the M56, to the south by the River Bollin, by the residential areas of Hale to the west and Timperley Central to the north. The ward contains a large amount of agricultural land including two private golf courses. There is also a number of private sports clubs within the ward providing facilities for tennis, bowling and football. It is generally considered to be an affluent ward in the top 10% wealthiest areas in England. Hale Barns has a good motorway network and is convenient for Manchester Airport, which is just a few miles away. The ward is diverse in nature and is home to large Jewish and Muslim community groups."},
 
-      "Gorse Hill":{slugName:"Gorse_Hill", description:"Gorse Hill is the northern most ward in Trafford. It is the third largest ward in area size, and contains the Trafford Park Industrial Estate. The majority of population are located within the ward's southern edge. The residential neighbourhoods within this area include Lostock to the west, the northern tip of Stretford in the south, together with Gorse Hill itself, straddling its Chester Road spine in the south eastern edge of the ward. The ward is home to the famous Manchester United Football Club as well as Trafford Town Hall. The Media City development located on the Salford side of the Canal involving the BBC is generating significant development on the Trafford side, and Gorse Hill is also home to the iconic Coronation Street studio. The area has also benefitted from a new housing development and shops in the Lostock area. Remaining Lostock Fair Share funding was allocated to Asset Based Community Development (ABCD). Trafford Park and Humphrey Park railway stations serve the ward for commuting to both Manchester and Liverpool."},
+      "Hale":{slugName:"Hale", description:"Hale is a densely populated ward located to the south east of Altrincham town centre. It is bounded to the south by the River Bollin, to the north by Altrincham Golf Course and by the residential areas of Hale Barns and Bowdon to the east and west. The heart of the ward is Hale village which enjoys a good variety of independent shops and fashionable bars and restaurants."},
 
-      "Hale Barns":{slugName:"Hale_Barns", description:"Hale Barns lies at the southern tip of the Borough. It is bounded to the east by the M56, to the south by the River Bollin, by the residential areas of Altrincham to the west and Newhall Green to the north. The ward contains a large amount of agricultural land including two private golf courses. There is also a number of private sports clubs within the ward providing facilities for tennis, bowling and football. It is generally considered to be an affluent ward in the top 10% wealthiest areas in England. Hale Barns has a good motorway network and is convenient for Manchester Airport. The ward is diverse in nature and is home to large Jewish and Muslim community groups."},
+      "Longford":{slugName:"Longford", description:"Longford is bounded to the south by the River Mersey, to the west by the A56 Chester Road and to the north by the Metrolink line; Manchester lies to the southeast and Old Trafford to the north east. Longford is a densely populated urban area in north-east of the borough. Longford Park, one of the borough's larger parks. Longford Athletics stadium can also be found adjacent to the park."},
+      
+                  "Lostock & Barton":{slugName:"Lostock_&_Barton", description:"Lostock & Barton is in the north of Trafford and is bounded to the north by the Manchester Ship Canal and the Bridgewater Canal. The ward is home to the Trafford Centre, separated from the residential areas by the M60, the historical Barton Aqueduct – which crosses the Manchester Ship Canal – and Barton Swing Bridge. The area has also benefitted from a new housing development and shops."},
+      
+            "Old Trafford":{slugName:"Old_Trafford", description:"Old Trafford is a small and densely populated ward at the north east tip of the borough bordering Hulme in Manchester to the east and Whalley Range to the south. Physically it is characterised by dense residential areas of Victorian terraced housing and a diverse range of housing stock. Old Trafford is also known for its very diverse population, vibrant communities and active community groups, some are established and there are some newer groups. Old Trafford is undergoing significant transformation with the Old Trafford Master Plan and there is a lot of change to current housing."},
 
-      "Hale Central":{slugName:"Hale_Central", description:"Hale Central is a densely populated ward located to the south east of Altrincham town centre. It is bounded to the south by the River Bollin and to the north by Altrincham Golf Course and by the residential areas of Hale Barns and Bowdon to the east and west. The heart of the ward is Hale village which enjoys a good variety of independent shops and fashionable bars and restaurants."},
+      "Sale Central":{slugName:"Sale_Central", description:"Sale Central ward is home to Sale Town Centre, Sale Waterside and the Town Hall and Sale Water Park with its Water Sports Centre. Worthington Park, Walkden Gardens, and Priory Woods are situated in the ward. It is bounded to the north by the River Mersey and to the east by the residential areas of Sale Moor; Ashton upon Mersey lies to the west and Brooklands to the south. The M60 motorway, A56 Chester Road and the Bridgewater Canal all run through the ward."},
 
-      "Longford":{slugName:"Longford", description:"Longford is a densely populated urban area in north east of the Borough. It is home to the world famous Lancashire County Cricket Club. Longford Park, one of the Borough's larger parks, has been the finishing point for the annual Stretford Pageant. Longford Athletics stadium can also be found adjacent to the park."},
+      "Sale Moor":{slugName:"Sale_Moor", description:"Sale Moor is situated to the east of the borough and shares a large part of its boundary with Manchester. Its northern boundary is the River Mersey and Sale Golf Course. The remaining boundaries are adjacent to residential areas on Northern Moor in Manchester and Sale Central. The M60 motorway runs through the ward and separates the main residential area from Sale Golf Course and the Mersey Valley."},
 
-      "Priory":{slugName:"Priory", description:"Priory ward is home to Sale Town Centre, Sale Waterside and the Town Hall and Sale Water Park with its Water Sports Centre, Worthington Park, Walkden Gardens, and Priory Woods. Priory ward is bounded to the north by the River Mersey and to the east by the residential areas of Sale Moor; Ashton on Mersey lies to the west and Brooklands to the south. The M60 motorway, A56 Chester Road and the Bridgewater Canal all run through the Ward."},
+      "Manor":{slugName:"Manor", description:"Manor is densely populated and suburban in character. The eastern boundary is the A56 (Washway Road), the western boundary is Dainewell Woods and Carrington Moss. The northern boundary is the residential areas of Ashton upon Mersey, and Broadheath lie to the south. Manor is a new ward, created in 2023 following changes to the boundaries of the electoral wards."},
 
-      "Sale Moor":{slugName:"Sale_Moor", description:"Sale Moor is situated to the east of the Borough and shares a large part of its boundary with Manchester. Its northern boundary is the River Mersey and Sale Golf Course. The remaining boundaries are adjacent to residential areas on Northern Moor in Manchester and Sale. The M60 motorway runs through the ward and separates the main residential area from Sale Golf Course and the Mersey Valley."},
+      "Stretford & Humphrey Park":{slugName:"Stretford_&_Humphrey_Park", description:"Stretford is a densely populated ward. The M60 motorway runs through the ward and is the boundary to the west. The River Mersey – the historical boundary between Lancashire and Cheshire – is the southern boundary and the M56 (Chester Road) is the eastern boundary. The ward contains Stretford Town Centre and Stretford Mall. The majority of the ward is greenbelt land and forms part of the Mersey Valley. To the south west of the ward lie Kickety Brook and the Stretford Meadows, providing a natural habitat for wildlife. The Trans Pennine Trail runs alongside the brook providing a pleasant walking environment. Trafford Council approved the Stretford Town Centre Masterplan in January 2018. The Masterplan provides a bold vision for delivering transformational change to Stretford Town Centre and represents a significant step forward in setting out a route to securing a sustainable economic future for the town centre. It will provide a framework for delivering the successful regeneration of Stretford Town Centre over the next 10 to 15 years."},
 
-      "St Mary's":{slugName:"St_Marys", description:"St Mary's ward is densely populated and suburban in character. The eastern boundary is the A56 (Washway Road) and the western boundary is Dainewell Woods, Carrington Moss and the residential areas of Ashton upon Mersey and Broadheath lie to the south."},
+      "Timperley North":{slugName:"Timperley_North", description:"Timperley North is primarily a residential area in the south of the borough. The ward is on the eastern boundary of the borough adjoining Manchester along Brooklands Road. It is bounded to the west by the Bridgewater Canal and to the north by Baguley Brook. The southern boundary is the Manchester to Chester railway line and beyond are the residential areas of Timperley Central."},
 
-      "Stretford":{slugName:"Stretford", description:"Stretford is a densely populated ward. The M60 motorway and Bridgewater Canal run through the ward. The River Mersey is the southern boundary and the residential areas of Stretford and Urmston are adjacent boundaries. The ward contains Stretford Town Centre and Stretford Mall. The ward itself does not rank particularly highly in terms of deprivation but it has pockets of very high deprivation. The majority of the ward is greenbelt land and forms part of the Mersey Valley. To the south west of the ward lie Kickety Brook and the Stretford Ees providing a natural habitat for wildlife. The Trans Pennine Trail runs alongside the Brook providing a pleasant walking environment. The ward is very mixed socially. Trafford Council approved the Stretford Town Centre Masterplan in January 2014. The Masterplan provides a bold vision for delivering transformational change to Stretford Town Centre and represents a significant step forward in setting out a route to securing a sustainable economic future for the town centre. It will provide a framework for delivering the successful regeneration of Stretford Town Centre over the next 10 to 15 years."},
+      "Urmston":{slugName:"Urmston", description:"Urmston is situated in the heart of the northern part of the borough. It is split into two residential areas by the Manchester to Liverpool railway line. The Mersey Valley and the River Mersey form the southern boundary, with the residential areas of Stretford to the east and Flixton to the west. Within the ward are Urmston Town Centre, Urmston train station and one of the five cemeteries of the borough."},
 
-      "Timperley":{slugName:"Timperley", description:"Timperley is primarily a residential area in the south of the Borough. It is bounded to the west by the Bridgewater Canal and to the north by Baguley Brook. To the east are residential areas and to the south the main A560 road and Altrincham Golf Course. On the ward border is the busy Timperley district shopping centre. The south of the ward is more affluent than the north of the ward. The ward ranks within the top 500 of the least deprived wards in the country."},
+      "Timperley Central":{slugName:"Timperley_Central", description:"At the northern boundary is the Manchester to Chester railway line, the western boundary is Timperley brook. The A560 is part of the south boundary and the Fairywell Brook at the west is the boundary with Manchester. The busy Timperley district shopping centre is situated at the heart of the ward. There, you will find a statue of Frank Sidebottom, the comic creation of Chris Sievey."}}
 
-      "Urmston":{slugName:"Urmston", description:"Urmston is situated in the heart of the northern part of the Borough. It is split into three residential areas by the M60 motorway and a railway line. The Mersey Valley and the River Mersey form the southern boundary, with the residential areas of Stretford to the east and Flixton to the west. Within the ward are Urmston Town Centre and one of the five cemeteries of the Borough."},
-
-      "Village":{slugName:"Village", description:"Village ward is on the eastern boundary of the Borough adjoining Manchester along Brooklands Road. To the south are Timperley wedge and the Bollin Valley and to the west the residential area of Timperley. Within the ward is the regeneration area of Broomwood, which contains a variety of greenspaces including Brooks Drive which runs from the A560 roundabout through the ward and forms part of a linear walkway and cycleway to link through to Davenport Green. Whilst the ward is fairly affluent it has pockets which face significant challenges."}}
-
-      document.getElementById("bar").innerHTML='<div class="eight0" ><object width="70%" type="image/svg+xml" data="https://www.trafforddatalab.io/info/wards/maps/' + nameObj[d.area_name]["slugName"] + '/output/figures/ward_plot.svg"></object></div>'
+      document.getElementById("bar").innerHTML='<div class="eight0" ><object width="70%" type="image/svg+xml" data="figures/' + nameObj[d.area_name]["slugName"] + '.svg"></object></div>'
       document.getElementById("description").innerHTML="<h3>" + d.area_name + "</h3><p>" + nameObj[d.area_name]["description"] + "</p>"
     }
 
-    function showBestFitMap(){
-      document.getElementById("svgBFM").innerHTML='<img width="100%" src="https://www.trafforddatalab.io/maps/static/output/trafford_best-fit_wards.png"></img>'
-      document.getElementById("bestFitMap").classList.add("visible");
-    }
-
-    function removeBestFitMap(){
-      document.getElementById("svgBFM").innerHTML=''
-      document.getElementById("bestFitMap").classList.remove("visible");
-    }
 
     function readURLData(){
       var theme=labGetQryStrValByKey("theme")

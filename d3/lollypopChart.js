@@ -1,7 +1,7 @@
 //Lollypop Chart d3 v4
 
-/*data=[{area_name : "Area 1", value : 4},
-      {area_name : "Area 2", value : 5},
+/*data=[{area_name : "Area 1", area_code : "Code1", value : 4},
+      {area_name : "Area 2", area_code : "Code2", value : 5},
       ...
     ]
 */
@@ -19,6 +19,8 @@ function lollypopChart(obj){
   var clickFunction = (obj.clickFunction) ? obj.clickFunction:""
   var markClick  = (obj.markClick) ? obj.markClick:false
   var indexToMark = (obj.indexToMark) ? obj.indexToMark:""
+  
+console.log(data)
   
   var numFormat = d3.format(",");
   data.sort(function(a, b){
@@ -40,7 +42,7 @@ function lollypopChart(obj){
 
   //width height and margins
 
-  var margin = {top: 50, right: 70, bottom: 20, left: 20};
+  var margin = {top: 50, right: 40, bottom: 20, left: 50};
 
   var widthG = width - margin.left - margin.right;
   var heightG = height - margin.top - margin.bottom;
@@ -86,7 +88,7 @@ function lollypopChart(obj){
   //Tick labels
   gy.selectAll("text")
   .data(data)
-  .attr("class", function(d) {return "tickLabel " + d.area_name})
+  .attr("class", function(d) {return "tickLabel " + d.area_code})
   .style("font-family", "Roboto")
   .style("font-size", "12px")
   .style("color", "#757575")
@@ -121,7 +123,7 @@ function lollypopChart(obj){
   .append("g")
   //append lines
   lollypops.append("line")
-  .attr("class", function(d) {return "stick " + d.area_name})
+  .attr("class", function(d) {return "stick " + d.area_code})
   .attr("x1", function(d) { return hx(d.value); })
   .attr("x2", hx(0))
   .attr("y1", function(d) { return hy(d.area_name)+hy.bandwidth()/2; })
@@ -132,7 +134,7 @@ function lollypopChart(obj){
   .attr("cx", function(d) { return hx(d.value); })
   .attr("cy", function(d) { return hy(d.area_name)+hy.bandwidth()/2; })
   .attr("r", "7")
-  .attr("class", function(d) {return "circle " + d.area_name})
+  .attr("class", function(d) {return "circle " + d.area_code})
   .style("fill", function(d) {
     if (!isNaN(parseFloat(d.value)) && isFinite(d.value)) {
       return quantize(d.value);
